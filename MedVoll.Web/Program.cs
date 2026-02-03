@@ -45,6 +45,29 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequiredLength = 8; // Tamanho mínimo da senha
 });
 
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Identity/Account/Login"; // Redireciona para login se não autenticado
+    options.LogoutPath = "/Identity/Account/Logout"; // Caminho para logout
+    options.AccessDeniedPath = "/Identity/Account/AccessDenied"; // Caminho para acesso negado
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(2); // Tempo de expiração
+    options.SlidingExpiration = true; // Renova o cookie automaticamente
+
+    options.Cookie.HttpOnly = true; // Impede acesso via JavaScript
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Exige HTTPS
+    options.Cookie.SameSite = SameSiteMode.Strict; // Restringe envio de cookies entre sites
+});
+
+
+builder.Services.AddSession(options =>
+{
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.IdleTimeout = TimeSpan.FromMinutes(1);
+});
+
+
 builder.Services.AddTransient<IMedicoRepository, MedicoRepository>();
 builder.Services.AddTransient<IConsultaRepository, ConsultaRepository>();
 builder.Services.AddTransient<IMedicoService, MedicoService>();
@@ -60,6 +83,8 @@ builder.Services.AddAntiforgery(options =>
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
+
+app.UseSession();
 
 if (app.Environment.IsDevelopment())
 {
