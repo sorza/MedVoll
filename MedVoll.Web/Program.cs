@@ -36,6 +36,15 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Lockout.MaxFailedAccessAttempts = 2;
 });
 
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    options.Password.RequireDigit = true; // Exigir pelo menos um número
+    options.Password.RequireLowercase = true; // Exigir pelo menos uma letra minúscula
+    options.Password.RequireUppercase = true; // Exigir pelo menos uma letra maiúscula
+    options.Password.RequireNonAlphanumeric = true; // Exigir caracteres especiais
+    options.Password.RequiredLength = 8; // Tamanho mínimo da senha
+});
+
 builder.Services.AddTransient<IMedicoRepository, MedicoRepository>();
 builder.Services.AddTransient<IConsultaRepository, ConsultaRepository>();
 builder.Services.AddTransient<IMedicoService, MedicoService>();
